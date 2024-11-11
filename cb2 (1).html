@@ -1,0 +1,590 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MMHRC Chat Interface</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+        integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+        <style>
+            .header img{
+                width:40%;
+                display:unset;
+            } 
+                .button:hover {
+                    background-color: #000000 !important;
+                }
+        
+                /* Modal styles */
+                .modal {
+                    display: none;
+                    position: fixed;
+                    z-index: 99;
+                    right: 0 !important;
+                    bottom: 0 !important;
+                    width: 100%;
+                    height: 100%;
+                    overflow: auto;
+                    background-color: rgba(0, 0, 0, 0.5);
+                }
+        
+                .modal-content {
+                    background-color: white;
+                    margin: 6% 0% 0% 73%;
+                    padding: 0;
+                    border: 1px solid #888;
+                    width: 25%;
+                    max-width: 600px;
+                    border-radius: 10px;
+                    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                    position: relative;
+                    height: 70%;
+                    display: flex;
+                    flex-direction: column;
+                }
+        
+                #openModalBtn {
+                    position: fixed;
+                    bottom: 0%;
+                    right: 5%;
+                    font-size: 34px;
+                    border: none;
+                    border-radius: 50%;
+                    cursor: pointer;
+                    z-index: 1;
+                    background: white;
+                    padding: 0;
+                }
+        
+                .close {
+                    position: absolute;
+                    color: #aaa;
+                    float: right;
+                    right: 20px;
+                    top: 15px;
+                    font-size: 35px;
+                    font-weight: bold;
+                }
+        
+                .close:hover,
+                .close:focus {
+                    color: black;
+                    text-decoration: none;
+                    cursor: pointer;
+                }
+        
+                .header {
+                    background-color: #2ab789;
+                    color: white;
+                    padding: 15px;
+                    
+                    font-size: 18px;
+                    font-weight: bold;
+                    border-top-left-radius: 10px;
+                    border-top-right-radius: 10px;
+                }
+        
+                .content {
+                    padding: 15px;
+                    flex: 1;
+                    overflow-y: auto;
+                    display: flex;
+                    flex-direction: column;
+                }
+        
+                .chat-bubble {
+                    padding: 10px;
+                    border-radius: 10px;
+                    margin-bottom: 10px;
+                    max-width: 70%;
+                    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+                    position: relative;
+                }
+        
+                .chat-bubble.bot {
+                    background-color: #2ab789;
+                    align-self: flex-start;
+                    color:white;
+                }
+        
+                .chat-bubble.user {
+                    background-color: #000000;
+                    color:#ffffff;
+                    align-self: flex-end;
+                }
+        
+                .input-area {
+                    border-top: 1px solid #ccc;
+                    padding: 10px;
+                    display: flex;
+                    align-items: center;
+                    background-color: white;
+                }
+        
+                .input-area input {
+                    flex-grow: 1;
+                    padding: 10px;
+                    border: 1px solid #ccc;
+                    border-radius: 5px;
+                    outline: none;
+                }
+        
+                .input-area button {
+                    margin-left: 10px;
+                    padding: 10px 20px;
+                    border: none;
+                    border-radius: 5px;
+                    background-color: #29795F;
+                    color: white;
+                    cursor: pointer;
+                }
+        
+                .service-btn,
+                .yes-no-btn {
+                    display: block;
+                    margin: 5px 0;
+                    padding: 10px;
+                    border: 1px solid #ddd;
+                    border-radius: 5px;
+                    background-color:  #2ab789;
+                    cursor: pointer;
+                    text-align: center;
+                    width: 45%;
+                }
+        
+                .service-btn:hover,
+                .yes-no-btn:hover {
+                    background-color: #ddd;
+                }
+                #servicesContainer{
+                    display: flex;
+                    flex-wrap: wrap;
+                    justify-content: center;
+                    gap: 5px
+                }
+        
+                .restart-button{
+                    width: 32%;
+                    height: 43%;
+                    display: block;
+                    padding: 10px;
+                    border: 1px solid black;
+                    border-radius: 9px;
+                
+            }
+            
+                
+        
+                @media screen and (max-width: 600px) {
+                    .modal-content {
+                        width: 95%;
+                    }
+        
+                    .input-area {
+                        flex-direction: column;
+                    }
+        
+                    .input-area input {
+                        margin-bottom: 10px;
+                    }
+                }
+            .header-text{
+                   text-align: center;
+                   display: block;
+                   margin-top: -35px;
+                    color: #ffffff;
+                  margin-left: 64px;
+                    font-size: 24px;
+                font-family: sans-serif;
+                font-weight: bold;
+                }
+            </style>
+</head>
+
+<body>
+    <div id="myModal" class="modal">
+        <!-- Modal content -->
+        <div class="modal-content">
+            <span class="close"><i class="fa-solid fa-circle-chevron-down" style="color: #ffffff;"></i></span>
+            <div class="header">
+                <img src="https://dmedva.com/wp-content/uploads/2023/10/D-Meduva-01.png" height="30px"
+                    alt="Hospital Logo">
+				<span class="header-text">CarePal</span>
+            </div>
+            <div class="content" id="dynamicResponses">
+                <!-- Chat bubbles will be appended here -->
+            </div>
+            <div class="input-area">
+                <input type="text" id="userInput" placeholder="Type your message..." />
+                <button id="sendBtn">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <button id="openModalBtn">
+        <img src="https://www.supremehospitals.in/wp-content/uploads/2024/08/icon.gif" alt="" width="100px"
+            height="100px">
+    </button>
+
+    <script>
+        const openModalBtn = document.getElementById("openModalBtn");
+        const modal = document.getElementById("myModal");
+        const closeBtn = document.getElementsByClassName("close")[0];
+        const userInput = document.getElementById("userInput");
+        const sendBtn = document.getElementById("sendBtn");
+        const dynamicResponses = document.getElementById("dynamicResponses");
+
+        let step = 0;
+        let askedDiscoveryConsultation = false;
+        let askedMoreInfo = false;
+        let initialMessageShown = false;
+
+        // Store user data
+        const userData = {
+            name: "",
+            email: "",
+            company: "",
+            role: "",
+            phone: "",
+            service: "",
+            consultation: ""
+        };
+
+        const botMessages = [
+            "Hi there! What's your name?",
+            "What's the best email address to reach you?",
+            "Which company are you with?",
+            "What's your role within the company?",
+            "Can I ask for your phone number in case we need to follow up with more details?",
+            "Which of our services/products are you most interested in?",
+            "Would you be interested in a free discovery consultation?",
+            "Thank you for providing your details! One of our agents will reach out to you within the next 24 hours/business day to assist you further. We appreciate your interest and look forward to speaking with you soon!",
+            "Is there anything else you'd like to know?",
+            "Our chat agent is currently offline. For immediate assistance, please feel free to call us at 8825597272 with any queries. We're here to help.",
+            "Thanks, have a great day!",
+            "Please click the submit button to store your data."
+        ];
+
+        const services = [
+            "Infinite-360",
+            "Marketing Automation",
+            "Patient Plus",
+            "Go Organic",
+            "Branding and Strategy",
+            "Traditional Marketing",
+            "Brand Collateral Design",
+            "Video Marketing"
+        ];
+
+        function showBotMessage(message) {
+            const bubble = document.createElement('div');
+            bubble.classList.add('chat-bubble', 'bot');
+            bubble.textContent = message;
+            dynamicResponses.appendChild(bubble);
+            dynamicResponses.scrollTop = dynamicResponses.scrollHeight;
+
+            if (message === botMessages[5] || message === botMessages[6] || message === botMessages[8]) {
+                disableInputArea();
+            }
+
+            if (message === botMessages[5]) {
+                showServiceButtons();
+            } else if (message === botMessages[6] && !askedDiscoveryConsultation) {
+                setTimeout(() => {
+                    removeLoadingMessage();
+                    showYesNoButtons();
+                    askedDiscoveryConsultation = true;
+                }, 2000);
+                showLoadingMessage();
+            } else if (message === botMessages[8] && !askedMoreInfo) {
+                setTimeout(() => {
+                    removeLoadingMessage();
+                    showYesNoButtons(true);
+                    askedMoreInfo = true;
+                }, 2000);
+                showLoadingMessage();
+            } else if (message === botMessages[11]) {
+                sendBtn.textContent = "Submit";
+                sendBtn.onclick = handleSubmitClick;
+            }
+        }
+
+        function disableInputArea() {
+            userInput.disabled = true;
+            sendBtn.disabled = true;
+        }
+
+        function enableInputArea() {
+            userInput.disabled = false;
+            sendBtn.disabled = false;
+        }
+
+        function showUserMessage(message) {
+            const bubble = document.createElement('div');
+            bubble.classList.add('chat-bubble', 'user');
+            bubble.textContent = message;
+            dynamicResponses.appendChild(bubble);
+            dynamicResponses.scrollTop = dynamicResponses.scrollHeight;
+        }
+
+        function showLoadingMessage() {
+            const loadingBubble = document.createElement('div');
+            loadingBubble.classList.add('chat-bubble', 'bot');
+            loadingBubble.id = 'loadingBubble';
+            loadingBubble.innerHTML = '<img src="https://www.supremehospitals.in/wp-content/uploads/2024/08/loading.gif" alt="Loading..." style="width: 40px; height: 40px; margin-right: 10px;"> ';
+            dynamicResponses.appendChild(loadingBubble);
+            dynamicResponses.scrollTop = dynamicResponses.scrollHeight;
+        }
+
+        function removeLoadingMessage() {
+            const loadingBubble = document.getElementById('loadingBubble');
+            if (loadingBubble) {
+                loadingBubble.remove();
+            }
+        }
+
+        function handleServiceSelection(service) {
+            showUserMessage(service);
+            userData.service = service;
+            document.getElementById("servicesContainer").remove();
+            
+            showLoadingMessage();
+            
+            setTimeout(() => {
+                removeLoadingMessage();
+                showBotMessage(botMessages[6]);
+                step++;
+            }, 2000);
+        }
+
+        function showYesNoButtons(isFinalQuestion = false) {
+            const yesNoContainer = document.createElement('div');
+            yesNoContainer.id = "yesNoContainer";
+
+            const yesBtn = document.createElement('button');
+            yesBtn.textContent = 'Yes';
+            yesBtn.classList.add('yes-no-btn');
+            yesBtn.addEventListener('click', () => handleYesNoResponse('yes', isFinalQuestion));
+
+            const noBtn = document.createElement('button');
+            noBtn.textContent = 'No';
+            noBtn.classList.add('yes-no-btn');
+            noBtn.addEventListener('click', () => handleYesNoResponse('no', isFinalQuestion));
+
+            yesNoContainer.appendChild(yesBtn);
+            yesNoContainer.appendChild(noBtn);
+
+            dynamicResponses.appendChild(yesNoContainer);
+        }
+
+        function handleYesNoResponse(response, isFinalQuestion = false) {
+            showUserMessage(response);
+            document.getElementById("yesNoContainer").remove();
+
+            if (!isFinalQuestion) {
+                userData.consultation = response;
+            }
+
+            if (isFinalQuestion) {
+                if (response === 'yes') {
+                    showBotMessage(botMessages[9]);
+                    showBotMessage(botMessages[11]);
+                } else {
+                    showBotMessage(botMessages[10]);
+                    showBotMessage(botMessages[11]);
+                }
+            } else {
+                if (response === 'yes') {
+                    showBotMessage(botMessages[7]);
+                    showBotMessage(botMessages[8]);
+                } else {
+                    showBotMessage(botMessages[8]);
+                }
+            }
+            step++;
+            enableInputArea();
+        }
+
+        function sendDataToGoogleSheet(data) {
+            const url = "https://script.google.com/macros/s/AKfycbw0jfPq_DsKsaErXr6qUKEv2oqaBiTUclovkBH_VqKMnprgdSUl4RwWY77aLl8byMecuw/exec";
+            const dataToSend = {
+                ...data,
+                consultation: data.consultation || 'Not answered'
+            };
+            fetch(url, {
+                method: "POST",
+                mode: "no-cors",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(dataToSend),
+            })
+            .then(response => {
+                console.log("Data successfully sent to Google Sheets");
+            })
+            .catch(error => {
+                console.error("Error:", error);
+            });
+        }
+
+        function handleSubmitClick() {
+            showUserMessage("Data has been submitted.");
+            sendBtn.disabled = true;
+
+            console.log("User Data:", userData);
+            sendDataToGoogleSheet(userData);
+            
+            showBotMessage("Thanks for chatting! Just click the Restart button below to begin from the start! 😊");
+            showRestartButton();
+        }
+
+        function showRestartButton() {
+            const restartButton = document.createElement('button');
+            restartButton.textContent = 'Restart Chat';
+            restartButton.classList.add('restart-button');
+            restartButton.addEventListener('click', restartChat);
+            dynamicResponses.appendChild(restartButton);
+        }
+
+        function restartChat() {
+            step = 0;
+            askedDiscoveryConsultation = false;
+            askedMoreInfo = false;
+            initialMessageShown = false;
+            for (let key in userData) {
+                userData[key] = "";
+            }
+
+            dynamicResponses.innerHTML = '';
+            enableInputArea();
+            showBotMessage(botMessages[0]);
+        }
+
+        sendBtn.addEventListener("click", () => {
+            const userMessage = userInput.value;
+            if (userMessage) {
+                handleUserInput(userMessage);
+                userInput.value = "";
+            }
+        });
+
+        userInput.addEventListener("keypress", (event) => {
+            if (event.key === "Enter") {
+                const userMessage = userInput.value;
+                if (userMessage) {
+                    handleUserInput(userMessage);
+                    userInput.value = "";
+                }
+            }
+        });
+
+        function isValidEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+
+        function isValidPhoneNumber(phone) {
+            return /^\d{10}$/.test(phone);
+        }
+
+        function handleUserInput(message) {
+            showUserMessage(message);
+            
+            showLoadingMessage();
+
+            setTimeout(() => {
+                removeLoadingMessage();
+                
+                switch(step) {
+                    case 0:
+                        userData.name = message;
+                        showBotMessage(botMessages[1]);
+                        break;
+                    case 1:
+                        if (isValidEmail(message)) {
+                            userData.email = message;
+                            showBotMessage(botMessages[2]);
+                        } else {
+                            showBotMessage("Please enter a valid email address with '@'.");
+                            return;
+                        }
+                        break;
+                    case 2:
+                        userData.company = message;
+                        showBotMessage(botMessages[3]);
+                        break;
+                    case 3:
+                        userData.role = message;
+                        showBotMessage(botMessages[4]);
+                        break;
+                    case 4:
+                        if (isValidPhoneNumber(message)) {
+                            userData.phone = message;
+                            showBotMessage(botMessages[5]);
+                        } else {
+                            showBotMessage("Please enter a valid 10-digit phone number.");
+                            return;
+                        }
+                        break;
+                    default:
+                        break;
+                }
+                
+                step++;
+            }, 2000);
+        }
+
+        function showServiceButtons() {
+            const serviceButtons = document.createElement('div');
+            serviceButtons.id = "servicesContainer";
+
+            services.forEach(service => {
+                const button = document.createElement('button');
+                button.textContent = service;
+                button.classList.add('service-btn');
+                button.addEventListener('click', () => handleServiceSelection(service));
+                serviceButtons.appendChild(button);
+            });
+
+            dynamicResponses.appendChild(serviceButtons);
+        }
+	 initialMessageShown = false;
+
+function openChatbot() {
+    modal.style.display = "block";
+    if (!initialMessageShown) {
+        showBotMessage(botMessages[0]);
+        initialMessageShown = true;
+    }
+}
+
+openModalBtn.onclick = openChatbot;
+
+// Automatically open chatbot after 30 seconds
+setTimeout(openChatbot, 20000);
+
+
+
+        openModalBtn.onclick = function () {
+            modal.style.display = "block";
+            if (!initialMessageShown) {
+                showBotMessage(botMessages[0]);
+                initialMessageShown = true;
+            }
+        };
+
+        closeBtn.onclick = () => modal.style.display = "none";
+
+        window.onclick = (event) => {
+            if (event.target === modal) {
+                modal.style.display = "none";
+            }
+        };
+    </script>
+
+</body>
+
+</html>
